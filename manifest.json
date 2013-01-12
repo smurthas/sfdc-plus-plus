@@ -1,0 +1,25 @@
+{
+  "name": "SFDC++",
+  "version": "0.0.0",
+  "manifest_version": 2,
+  "icons": {
+    "128":"icon128.png",
+    "48":"icon48.png",
+    "16":"icon16.png"
+  },
+  "description": "Make SFDC better",
+  "content_scripts": [
+    {
+      "matches": ["https://*.salesforce.com/*"],
+      "js": [
+        "js/jquery.min.js",
+        "js/mousetrap.js",
+        "js/sfdc.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": [
+    "https://*.salesforce.com/"
+  ],
+  "content_security_policy": "script-src 'self' https://api.singly.com; object-src 'self'"
+}
