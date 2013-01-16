@@ -52,6 +52,10 @@ Mousetrap.bind('g r', function() { gotoTab('report'); });
 // c t → create new task
 Mousetrap.bind('c t', function() { createNew('task'); });
 
+
+// l c → log a callk
+Mousetrap.bind('l c', function() { $('input[title="Log A Call"]').click(); });
+
 var index = -1;
 Mousetrap.bind('j', function() {
   var table = $('#ext-gen12');
