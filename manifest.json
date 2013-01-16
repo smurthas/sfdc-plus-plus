@@ -1,6 +1,6 @@
 {
   "name": "SFDC++",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "manifest_version": 2,
   "icons": {
     "128":"icon128.png",
@@ -11,8 +11,10 @@
   "content_scripts": [
     {
       "matches": ["https://*.salesforce.com/*"],
+      "css": [ "css/smoothness/jquery-ui-1.9.2.custom.min.css" ],
       "js": [
         "js/jquery.min.js",
+        "js/jquery-ui-1.9.2.custom.min.js",
         "js/mousetrap.js",
         "js/sfdc.js"],
       "run_at": "document_start"

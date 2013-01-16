@@ -77,3 +77,81 @@ Mousetrap.bind('k', function() {
   a.focus();
 });
 
+var SCID = '222e053e1ee3329a8f2bf395247dc443';
+var autoCompURL = 'https://api.singly.com/friends/gcontacts'
+var atok;
+
+function addAutocomplete(suffix) {
+  var first = '#name_first' + suffix + '2';
+  var last  = '#name_last' + suffix + '2';
+  var email = '#' + suffix;
+  var phone;
+  if (suffix === 'lea') email += '11';
+  else if (suffix === 'con') {
+    email += '15';
+    phone = suffix + '10';
+  }
+  var selections = [];
+  $(first).autocomplete({
+    source: function(request, response) {
+      //if (!atok) return;
+      var q = $(first).val();
+      $.getJSON(autoCompURL + '?access_token=' + atok + '&q=' + q, function(a) {
+        selections = a;
+        var ret = [];
+        for (var i in a) {
+          var first = a[i].name.split(' ')[0];
+          var last = a[i].name.split(' ')[1];
+          var val = a[i];
+          val.label = a[i].name;
+          val.value = first;
+          val.last = last;
+          ret.push(val);
+        }
+        response(ret);
+      });
+    },
+    select: function(event, ui) {
+      // set last name
+      $(last).val(ui.item && ui.item.last);
+      // set email
+      $(email).val(ui.item && ui.item.email);
+
+      if (phone) $(phone).val(ui.item.phone);
+    },
+    delay:100
+  });
+
+}
+
+var authURL = 'https://api.singly.com/oauth/authenticate?client_id=' + SCID +
+                '&redirect_uri=' + window.location.href +
+                '&service=gcontacts&response_type=token';
+
+function addGContactsLogo() {
+  var html = '<a href="' + authURL + '">' +
+  '<img src="http://assets.singly.com/service-icons/16px/gcontacts.png"></a>';
+  $($('#AppBodyHeader').find('td.right')[0]).prepend(html);
+}
+
+$(function() {
+  // check url hash for token
+  if (window.location.hash &&
+      window.location.hash.indexOf('#access_token=') === 0) {
+    atok = window.location.hash.substring(14);
+    localStorage.setItem('token', atok);
+  } else {
+    // check local storage for token
+    atok = localStorage.getItem('token');
+  }
+  // add autocomp for leads
+  addAutocomplete('lea');
+
+  // add autocomp for contacts
+  addAutocomplete('con');
+
+  // ad the gcontacts auth logo in top right
+  addGContactsLogo();
+});
+
+
