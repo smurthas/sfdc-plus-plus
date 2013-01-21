@@ -11,7 +11,9 @@
   "content_scripts": [
     {
       "matches": ["https://*.salesforce.com/*"],
-      "css": [ "css/smoothness/jquery-ui-1.9.2.custom.min.css" ],
+      "css": [
+      "css/smoothness/jquery-ui-1.9.2.custom.min.css",
+      "css/keyboard-shortcuts.css"],
       "js": [
         "js/jquery.min.js",
         "js/jquery-ui-1.9.2.custom.min.js",

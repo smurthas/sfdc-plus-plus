@@ -1,18 +1,3 @@
-// / → focus on search bar
-Mousetrap.bind('/', function() {
-  $('#phSearchInput').focus();
-  return false;
-});
-
-// e → edit current object
-Mousetrap.bind('e', function() { $('input[title="Edit"]').click(); });
-
-// o → change owner
-Mousetrap.bind('o', function() {
-  var a = $('a:contains("Change")')[0];
-  document.location = $(a).attr('href');
-});
-
 function gotoTab(tab) {
   document.location = $('#' + tab + '_Tab').children().attr('href').slice(0, -2);
 }
@@ -20,62 +5,137 @@ function gotoTab(tab) {
 function createNew(type) {
   document.location = $('#createNewMenu').find('.' + type + 'Mru').attr('href');
 }
-
-// g l → go to my leads
-Mousetrap.bind('g l', function() { gotoTab('Lead'); });
-
-// c l → create new lead
-Mousetrap.bind('c l', function() { createNew('lead'); });
-
-// g a → go to my accounts
-Mousetrap.bind('g a', function() { gotoTab('Account'); });
-
-// c a → create new account
-Mousetrap.bind('c a', function() { createNew('account'); });
-
-// g c → go to my contacts
-Mousetrap.bind('g c', function() { gotoTab('Contact'); });
-
-// c c → create new contact
-Mousetrap.bind('c c', function() { createNew('contact'); });
-
-// g o → go to my opporunities
-Mousetrap.bind('g o', function() { gotoTab('Opportunity'); });
-
-// c o → create new opportunity
-Mousetrap.bind('c o', function() { createNew('opportunity'); });
-
-// g r → go to reports
-Mousetrap.bind('g r', function() { gotoTab('report'); });
-
-
-// c t → create new task
-Mousetrap.bind('c t', function() { createNew('task'); });
-
-
-// l c → log a callk
-Mousetrap.bind('l c', function() { $('input[title="Log A Call"]').click(); });
-
 var index = -1;
-Mousetrap.bind('j', function() {
+function changeRows(offset) {
   var table = $('#ext-gen12');
   var rows = table.find('.x-grid3-row');
-  if (index >= rows.length-1) return;
-  index++;
-  var row = $(table.find('.x-grid3-row')[index]);
-  var a = $(row.find('table').find('td')[3]).find('a');
-  a.focus();
-});
-
-Mousetrap.bind('k', function() {
-  var table = $('#ext-gen12');
-  var rows = table.find('.x-grid3-row');
-  if(index === 0) return;
-  index--;
+  if (!rows || !rows.length) return;
+  if (index+offset >= rows.length) return;
+  if (index+offset < 0) return;
+  index += offset;
   var row = $(rows[index]);
   var a = $(row.find('table').find('td')[3]).find('a');
   a.focus();
-});
+}
+
+var mappings = {
+  'Navigation': {
+    '/': {
+      description: 'focus on search bar',
+      handler: function() {
+        $('#phSearchInput').focus();
+        return false;
+      }
+    },
+    'j': {
+      description: 'Next row',
+      handler: changeRows.bind(null, 1)
+    },
+    'k': {
+      description: 'Previous row',
+      handler: changeRows.bind(null, -1)
+    },
+    '?': {
+      description: 'show help',
+      handler: showHelp
+    }
+  },
+  'Jumping': {
+    'g l': {
+      description: 'Go to My Leads',
+      handler: gotoTab.bind(null, 'Lead')
+    },
+    'g a': {
+      description: 'Go to My Accounts',
+      handler: gotoTab.bind(null, 'Account')
+    },
+    'g o': {
+      description: 'Go to My Opportunites',
+      handler: gotoTab.bind(null, 'Opportunity')
+    },
+    'g r': {
+      description: 'Go to My Reports',
+      handler: gotoTab.bind(null, 'Report')
+    },
+    'g c': {
+      description: 'Go to My Contacts',
+      handler: gotoTab.bind(null, 'Contact')
+    }
+  },
+  'Editing': {
+    'e': {
+      description: 'edit current item',
+      handler: function() { $('input[title="Edit"]').click(); }
+    },
+    'o': {
+      description: 'change owner',
+      handler: function() {
+        var a = $('a:contains("Change")')[0];
+        document.location = $(a).attr('href');
+      }
+    },
+    'c l': {
+      description: 'Create a new lead',
+      handler: createNew.bind(null, 'lead')
+    },
+    'c a': {
+      description: 'Create a new account',
+      handler: createNew.bind(null, 'account')
+    },
+    'c o': {
+      description: 'Create a new opportunity',
+      handler: createNew.bind(null, 'lead')
+    },
+    'c c': {
+      description: 'Create a new contact',
+      handler: createNew.bind(null, 'contact')
+    },
+    'c t': {
+      description: 'Create a new task',
+      handler: createNew.bind(null, 'task')
+    },
+    'l c': {
+      description: 'Log a call',
+      handler: function() { $('input[title="Log A Call"]').click(); }
+    }
+  }
+};
+
+for (var section in mappings) {
+  for(var k in mappings[section])
+  Mousetrap.bind(k, mappings[section][k].handler);
+}
+
+
+var help;
+function showHelp() {
+  if ($("#sfdc-ks").length > 0) {
+    if ($("#sfdc-ks").is(":visible")) return $("#sfdc-ks").hide();
+    else return $("#sfdc-ks").show();
+  }
+  console.log('building help!');
+  var html = '<div id="sfdc-ks"><div id="title">Keyboard Shortcuts!</div>';
+
+  for (var sectionTitle in mappings) {
+    var section = mappings[sectionTitle];
+    html += '<table><tr><th></th><th>' + sectionTitle + '</th></tr>';
+    for (var shortcut in section) {
+      html += buildRow(shortcut, section[shortcut].description);
+    }
+    html += '</table>';
+  }
+  html += '</div>';
+  console.error('html', html);
+  $('body').append(html);
+}
+
+function buildRow(shortcut, description) {
+  var spl = shortcut.split(' ');
+  var str = '<tr>' + '<td><span class="yellow">' + spl[0] + '</span>';
+  if (spl[1]) str += ' then <span class="yellow">' + spl[1] + '</span>';
+  str += ':</td><td>' + description + '</td></tr>';
+  return str;
+}
 
 var SCID = '222e053e1ee3329a8f2bf395247dc443';
 var autoCompURL = 'https://api.singly.com/friends/gcontacts'
