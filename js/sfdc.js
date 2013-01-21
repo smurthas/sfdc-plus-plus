@@ -21,11 +21,8 @@ function changeRows(offset) {
 var mappings = {
   'Navigation': {
     '/': {
-      description: 'focus on search bar',
-      handler: function() {
-        $('#phSearchInput').focus();
-        return false;
-      }
+      description: 'Move focus to search bar',
+      handler: function() { $('#phSearchInput').focus(); return false; }
     },
     'j': {
       description: 'Next row',
@@ -36,39 +33,17 @@ var mappings = {
       handler: changeRows.bind(null, -1)
     },
     '?': {
-      description: 'show help',
+      description: 'Show/Hide help',
       handler: showHelp
-    }
-  },
-  'Jumping': {
-    'g l': {
-      description: 'Go to My Leads',
-      handler: gotoTab.bind(null, 'Lead')
-    },
-    'g a': {
-      description: 'Go to My Accounts',
-      handler: gotoTab.bind(null, 'Account')
-    },
-    'g o': {
-      description: 'Go to My Opportunites',
-      handler: gotoTab.bind(null, 'Opportunity')
-    },
-    'g r': {
-      description: 'Go to My Reports',
-      handler: gotoTab.bind(null, 'Report')
-    },
-    'g c': {
-      description: 'Go to My Contacts',
-      handler: gotoTab.bind(null, 'Contact')
     }
   },
   'Editing': {
     'e': {
-      description: 'edit current item',
+      description: 'Edit current item',
       handler: function() { $('input[title="Edit"]').click(); }
     },
     'o': {
-      description: 'change owner',
+      description: 'Change owner of current item',
       handler: function() {
         var a = $('a:contains("Change")')[0];
         document.location = $(a).attr('href');
@@ -98,6 +73,28 @@ var mappings = {
       description: 'Log a call',
       handler: function() { $('input[title="Log A Call"]').click(); }
     }
+  },
+  'Jumping': {
+    'g l': {
+      description: 'Go to My Leads',
+      handler: gotoTab.bind(null, 'Lead')
+    },
+    'g a': {
+      description: 'Go to My Accounts',
+      handler: gotoTab.bind(null, 'Account')
+    },
+    'g o': {
+      description: 'Go to My Opportunites',
+      handler: gotoTab.bind(null, 'Opportunity')
+    },
+    'g r': {
+      description: 'Go to My Reports',
+      handler: gotoTab.bind(null, 'Report')
+    },
+    'g c': {
+      description: 'Go to My Contacts',
+      handler: gotoTab.bind(null, 'Contact')
+    }
   }
 };
 
@@ -115,16 +112,24 @@ function showHelp() {
   }
   console.log('building help!');
   var html = '<div id="sfdc-ks"><div id="title">Keyboard Shortcuts!</div>';
+  html += '<table id="outer-table"><tr>';
 
+  var columns = ['<td class="sfdc-ks-col">', '<td class="sfdc-ks-col">'];
+
+  var col = 1;
   for (var sectionTitle in mappings) {
+    col = (col+1) % 2;
     var section = mappings[sectionTitle];
-    html += '<table><tr><th></th><th>' + sectionTitle + '</th></tr>';
+    columns[col] += '<table><tr><th></th><th>' + sectionTitle + '</th></tr>';
     for (var shortcut in section) {
-      html += buildRow(shortcut, section[shortcut].description);
+      columns[col] += buildRow(shortcut, section[shortcut].description);
     }
-    html += '</table>';
+    columns[col] += '</table>';
   }
-  html += '</div>';
+  columns[0] += '</td>';
+  columns[1] += '</td>';
+  html += columns.join('');
+  html += '</tr></table></div>';
   console.error('html', html);
   $('body').append(html);
 }
