@@ -3,8 +3,14 @@ function gotoTab(tab) {
 }
 
 function createNew(type) {
+  var capCase = type.substring(0, 1).toUpperCase() + type.substring(1);
+  var button = $('input[title="New ' + capCase + '"]');
+  if (button.length === 1) {
+    return button[0].click();
+  }
   document.location = $('#createNewMenu').find('.' + type + 'Mru').attr('href');
 }
+
 var index = -1;
 function changeRows(offset) {
   var table = $('#ext-gen12');
@@ -59,7 +65,7 @@ var mappings = {
     },
     'c o': {
       description: 'Create a new opportunity',
-      handler: createNew.bind(null, 'lead')
+      handler: createNew.bind(null, 'opportunity')
     },
     'c c': {
       description: 'Create a new contact',
