@@ -1,6 +1,6 @@
 {
   "name": "SFDC++",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "manifest_version": 2,
   "icons": {
     "128":"icon128.png",
@@ -12,18 +12,30 @@
     {
       "matches": ["https://*.salesforce.com/*"],
       "css": [
-      "css/smoothness/jquery-ui-1.9.2.custom.min.css",
-      "css/keyboard-shortcuts.css"],
+        "css/smoothness/jquery-ui-1.9.2.custom.min.css",
+        "css/keyboard-shortcuts.css"
+      ],
       "js": [
         "js/jquery.min.js",
         "js/jquery-ui-1.9.2.custom.min.js",
         "js/mousetrap.js",
-        "js/sfdc.js"],
+        "js/sfdc.js"
+      ],
       "run_at": "document_start"
+    },
+    {
+      "matches": ["https://mail.google.com/mail/*"],
+      "js": [
+        "js/jquery.min.js",
+        "js/mousetrap.js",
+        "js/gmail.js"
+      ],
+      "run_at": "document_end"
     }
   ],
   "permissions": [
-    "https://*.salesforce.com/"
+    "https://*.salesforce.com/",
+    "https://mail.google.com/"
   ],
   "content_security_policy": "script-src 'self' https://api.singly.com; object-src 'self'"
 }

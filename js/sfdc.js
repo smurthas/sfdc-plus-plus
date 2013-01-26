@@ -14,13 +14,18 @@ function createNew(type) {
 var index = -1;
 function changeRows(offset) {
   var table = $('#ext-gen12');
+  if (!table || table.length < 1) table = $('table.list');
   var rows = table.find('.x-grid3-row');
+  if (!rows || rows.length < 1) rows = table.find('tr.dataRow');
   if (!rows || !rows.length) return;
   if (index+offset >= rows.length) return;
   if (index+offset < 0) return;
   index += offset;
   var row = $(rows[index]);
   var a = $(row.find('table').find('td')[3]).find('a');
+  if (!a || a.length < 1) {
+    a = $(row.find('th').find('a')[0]);
+  }
   a.focus();
 }
 
